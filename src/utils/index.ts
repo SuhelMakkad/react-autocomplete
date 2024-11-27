@@ -18,3 +18,11 @@ export const debounce = <T extends (...args: unknown[]) => unknown>(
     return timeout;
   };
 };
+
+export const scrollInViewById = (id: string) => {
+  const element = document.getElementById(id);
+
+  if (element) {
+    element.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+};

@@ -6,13 +6,8 @@ export const HighlightedText: React.FC<MatchResult> = ({ value, matches }) => {
   // to handle overlapping matches, sort them by start position
   const sortedMatches = [...matches].sort((a, b) => a.start - b.start);
 
-  console.log({
-    value,
-    matches,
-  });
-
-  const segments: JSX.Element[] = [];
   let lastIndex = 0;
+  const segments: JSX.Element[] = [];
 
   sortedMatches.forEach((match, index) => {
     if (match.start > lastIndex) {

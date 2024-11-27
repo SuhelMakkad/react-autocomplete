@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { HighlightedText } from "./highlighted-text";
 import { useClickOutside } from "@/hooks/use-click-outside";
-import { debounce } from "@/utils";
+import { debounce, scrollInViewById } from "@/utils";
 import { searchCities, MatchResult } from "@/utils/data";
 
 type AutocompleteProps = {
@@ -14,7 +14,7 @@ type AutocompleteProps = {
 export const Autocomplete: React.FC<AutocompleteProps> = ({
   value,
   onSelect,
-  minChars = 0,
+  minChars = 1,
   placeholder = "Start typing...",
 }) => {
   const [query, setQuery] = useState("");
@@ -69,12 +69,14 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
     if (event.key === "ArrowDown") {
       event.preventDefault();
       setSelectedIndex((prev) => (prev < suggestions.length - 1 ? prev + 1 : prev));
+      scrollInViewById(`${listOptionsPrefixId}${selectedIndex + 1}`);
       return;
     }
 
     if (event.key === "ArrowUp") {
       event.preventDefault();
       setSelectedIndex((prev) => (prev > 0 ? prev - 1 : 0));
+      scrollInViewById(`${listOptionsPrefixId}${selectedIndex - 1}`);
       return;
     }
 
