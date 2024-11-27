@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useClickOutside } from "@/hooks/use-click-outside";
 import { debounce } from "@/utils";
 import { fetchData } from "@/utils/data";
@@ -23,6 +23,9 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
 
   const containerRef = useClickOutside(() => setShowSuggestions(false));
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const listId = useId();
+  const listOptionsPrefixId = useId();
 
   useEffect(() => {
     if (query.length < minChars) {
@@ -104,6 +107,12 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
             setShowSuggestions(true);
           }
         }}
+        aria-label="Search"
+        aria-expanded={showSuggestions}
+        aria-controls={listId}
+        aria-activedescendant={
+          selectedIndex >= 0 ? `${listOptionsPrefixId}-suggestion-${selectedIndex}` : undefined
+        }
       />
 
       {selectedValue && (
@@ -121,17 +130,23 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
         </button>
       )}
 
-      {!selectedValue && isLoading && (
+      {!selectedValue && isLoading && showSuggestions && (
         <div className="absolute top-10 left-0 right-0 flex justify-center items-center h-10 bg-white rounded-md border shadow-sm text-sm">
           Loading...
         </div>
       )}
 
       {!selectedValue && !isLoading && showSuggestions && suggestions.length > 0 && (
-        <ul className="flex flex-col absolute top-10 left-0 right-0 rounded-md overflow-hidden border shadow-sm">
+        <ul
+          id={listId}
+          role="listbox"
+          className="flex flex-col absolute top-10 left-0 right-0 rounded-md overflow-hidden border shadow-sm"
+        >
           {suggestions.map((item, index) => (
             <li
               key={item}
+              id={`${listOptionsPrefixId}-suggestion-${index}`}
+              role="option"
               aria-selected={selectedIndex === index}
               className="bg-white cursor-pointer px-2 py-1 w-full aria-selected:bg-gray-100"
               onClick={() => handleSelect(item)}
