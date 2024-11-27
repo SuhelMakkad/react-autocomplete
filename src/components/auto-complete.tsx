@@ -1,3 +1,4 @@
+import { useClickOutside } from "@/hooks/use-click-outside";
 import { debounce } from "@/utils";
 import { fetchData } from "@/utils/data";
 import { useEffect, useState } from "react";
@@ -17,6 +18,8 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+
+  const containerRef = useClickOutside(() => setShowSuggestions(false));
 
   useEffect(() => {
     if (query.length < minChars) {
@@ -52,7 +55,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   };
 
   return (
-    <div className="w-64 relative">
+    <div ref={containerRef} className="w-64 relative">
       <input
         placeholder={placeholder}
         value={query}
