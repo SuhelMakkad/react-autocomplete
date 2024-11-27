@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useClickOutside } from "@/hooks/use-click-outside";
 import { debounce } from "@/utils";
 import { fetchData } from "@/utils/data";
@@ -21,7 +21,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
-  const containerRef = useClickOutside(() => setShowSuggestions(false));
+  const containerRef = useClickOutside(useCallback(() => setShowSuggestions(false), []));
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const listId = useId();
