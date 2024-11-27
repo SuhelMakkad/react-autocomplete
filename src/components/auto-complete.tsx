@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { HighlightedText } from "./highlighted-text";
 import { useClickOutside } from "@/hooks/use-click-outside";
 import { debounce } from "@/utils";
-import { fetchData } from "@/utils/data";
+import { searchCities, MatchResult } from "@/utils/data";
 
 type AutocompleteProps = {
   minChars?: number;
@@ -13,11 +14,11 @@ type AutocompleteProps = {
 export const Autocomplete: React.FC<AutocompleteProps> = ({
   value,
   onSelect,
-  minChars = 2,
+  minChars = 0,
   placeholder = "Start typing...",
 }) => {
   const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestions, setSuggestions] = useState<MatchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -39,7 +40,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
       setIsLoading(true);
 
       try {
-        const results = await fetchData(query);
+        const results = await searchCities(query);
         setSuggestions(results);
         setShowSuggestions(true);
       } catch (error) {
@@ -79,7 +80,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
 
     if (event.key === "Enter") {
       if (selectedIndex >= 0 && suggestions[selectedIndex]) {
-        handleSelect(suggestions[selectedIndex]);
+        handleSelect(suggestions[selectedIndex].value);
       }
       return;
     }
@@ -111,7 +112,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
         aria-expanded={showSuggestions}
         aria-controls={listId}
         aria-activedescendant={
-          selectedIndex >= 0 ? `${listOptionsPrefixId}-suggestion-${selectedIndex}` : undefined
+          selectedIndex >= 0 ? `${listOptionsPrefixId}${selectedIndex}` : undefined
         }
       />
 
@@ -140,19 +141,19 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
         <ul
           id={listId}
           role="listbox"
-          className="flex flex-col absolute top-10 left-0 right-0 rounded-md overflow-hidden border shadow-sm"
+          className="flex flex-col absolute top-10 left-0 right-0 rounded-md border shadow-sm max-h-52 overflow-auto"
         >
           {suggestions.map((item, index) => (
             <li
-              key={item}
-              id={`${listOptionsPrefixId}-suggestion-${index}`}
+              key={item.value}
+              id={`${listOptionsPrefixId}${index}`}
               role="option"
               aria-selected={selectedIndex === index}
               className="bg-white cursor-pointer px-2 py-1 w-full aria-selected:bg-gray-100"
-              onClick={() => handleSelect(item)}
+              onClick={() => handleSelect(item.value)}
               onMouseEnter={() => setSelectedIndex(index)}
             >
-              {item}, {query}
+              <HighlightedText {...item} />
             </li>
           ))}
         </ul>

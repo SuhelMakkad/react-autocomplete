@@ -1,26 +1,45 @@
-export const data = [
-  "New York",
-  "Los Angeles",
-  "Chicago",
-  "Houston",
-  "Phoenix",
-  "Philadelphia",
-  "San Antonio",
-  "San Diego",
-  "Dallas",
-  "San Jose",
-  "Austin",
-  "Jacksonville",
-  "Fort Worth",
-  "Columbus",
-  "Charlotte",
-];
+import { cities } from "./cities";
 
-export const fetchData = (query: string) => {
-  console.log("fetchData", new Date());
-  return new Promise<string[]>((resolve) => {
+export type MatchPosition = {
+  start: number;
+  end: number;
+};
+
+export type MatchResult = {
+  value: string;
+  matches: MatchPosition[];
+};
+
+export const searchCities = (query: string): Promise<MatchResult[]> => {
+  return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(data.filter((item) => item.toLowerCase().includes(query.toLowerCase())));
+      const results = cities
+        .filter((item) => item.toLowerCase().includes(query.toLowerCase()))
+        .map((value) => {
+          const matches: MatchPosition[] = [];
+          const lowerItem = value.toLowerCase();
+          const lowerQuery = query.toLowerCase();
+          let pos = 0;
+
+          // Find all occurrences of the query in the item
+          while (pos !== -1) {
+            pos = lowerItem.indexOf(lowerQuery, pos);
+            if (pos !== -1) {
+              matches.push({
+                start: pos,
+                end: pos + query.length,
+              });
+              pos += 1; // Move to next character to find additional matches
+            }
+          }
+
+          return {
+            value,
+            matches,
+          };
+        });
+
+      resolve(results);
     }, 1000);
   });
 };
