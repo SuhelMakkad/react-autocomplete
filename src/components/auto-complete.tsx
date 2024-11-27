@@ -1,3 +1,4 @@
+import { fetchData } from "@/utils/data";
 import { useEffect, useState } from "react";
 
 type AutocompleteProps = {
@@ -17,20 +18,22 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
-    (() => {
-      if (query.length >= minChars) {
-        setIsLoading(true);
-        try {
-          const data = ["Apple", "Banana", "Cherry", "Date", "Elderberry"];
-          setSuggestions(data);
-        } catch (error) {
-          console.error("Error fetching suggestions:", error);
-          setSuggestions([]);
-        } finally {
-          setIsLoading(false);
-        }
-      } else {
+    if (query.length < minChars) {
+      setSuggestions([]);
+      return;
+    }
+
+    (async () => {
+      setIsLoading(true);
+
+      try {
+        const data = await fetchData(query);
+        setSuggestions(data);
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
         setSuggestions([]);
+      } finally {
+        setIsLoading(false);
       }
     })();
   }, [minChars, query]);
@@ -40,10 +43,6 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
     onSelect(item);
     setShowSuggestions(false);
   };
-
-  console.log({
-    showSuggestions,
-  });
 
   return (
     <div className="w-64 relative">
@@ -60,9 +59,13 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
         className="border border-gray-300 rounded-md px-2 py-1 w-full"
       />
 
-      {isLoading && <div>Loading...</div>}
+      {isLoading && (
+        <div className="absolute top-10 left-0 right-0 flex justify-center items-center h-10 bg-white rounded-md border shadow-sm text-sm">
+          Loading...
+        </div>
+      )}
 
-      {showSuggestions && suggestions.length > 0 && (
+      {!isLoading && showSuggestions && suggestions.length > 0 && (
         <ul className="flex flex-col absolute top-10 left-0 right-0 rounded-md overflow-hidden border shadow-sm">
           {suggestions.map((item) => (
             <li
