@@ -17,6 +17,7 @@ export const data = [
 ];
 
 export const fetchData = (query: string) => {
+  console.log("fetchData", new Date());
   return new Promise<string[]>((resolve) => {
     setTimeout(() => {
       resolve(data.filter((item) => item.toLowerCase().includes(query.toLowerCase())));

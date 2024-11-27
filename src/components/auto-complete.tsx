@@ -1,3 +1,4 @@
+import { debounce } from "@/utils";
 import { fetchData } from "@/utils/data";
 import { useEffect, useState } from "react";
 
@@ -20,22 +21,28 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   useEffect(() => {
     if (query.length < minChars) {
       setSuggestions([]);
+      setShowSuggestions(false);
       return;
     }
 
-    (async () => {
+    const debouncedFetchData = debounce(async () => {
       setIsLoading(true);
 
       try {
-        const data = await fetchData(query);
-        setSuggestions(data);
+        const results = await fetchData(query);
+        setSuggestions(results);
+        setShowSuggestions(true);
       } catch (error) {
         console.error("Error fetching suggestions:", error);
         setSuggestions([]);
       } finally {
         setIsLoading(false);
       }
-    })();
+    }, 300);
+
+    const timeoutId = debouncedFetchData();
+
+    return () => clearTimeout(timeoutId);
   }, [minChars, query]);
 
   const handleSelect = (item: string) => {
