@@ -4,17 +4,18 @@ import { debounce } from "@/utils";
 import { fetchData } from "@/utils/data";
 
 type AutocompleteProps = {
-  onSelect: (item: string) => void;
-  placeholder?: string;
   minChars?: number;
+  placeholder?: string;
+  value?: string;
+  onSelect: (item: string) => void;
 };
 
 export const Autocomplete: React.FC<AutocompleteProps> = ({
+  value,
   onSelect,
-  placeholder = "Start typing...",
   minChars = 2,
+  placeholder = "Start typing...",
 }) => {
-  const [selectedValue, setSelectedValue] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -57,7 +58,6 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   const handleSelect = (item: string) => {
     setQuery(item);
     onSelect(item);
-    setSelectedValue(item);
     setShowSuggestions(false);
     setSelectedIndex(-1);
 
@@ -97,7 +97,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
         ref={inputRef}
         placeholder={placeholder}
         value={query}
-        disabled={!!selectedValue}
+        disabled={!!value}
         className="border border-gray-300 rounded-md px-2 py-1 w-full disabled:bg-gray-100"
         onKeyDown={handleKeyDown}
         onFocus={() => query.length >= minChars && setShowSuggestions(true)}
@@ -115,12 +115,12 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
         }
       />
 
-      {selectedValue && (
+      {value && (
         <button
           className="text-xs hover:underline text-end w-full"
           onClick={() => {
-            setQuery(selectedValue);
-            setSelectedValue(null);
+            setQuery(value);
+            onSelect("");
 
             // let the disable prop take effect before focusing
             setTimeout(() => inputRef.current?.focus(), 0);
@@ -130,13 +130,13 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
         </button>
       )}
 
-      {!selectedValue && isLoading && showSuggestions && (
+      {!value && isLoading && showSuggestions && (
         <div className="absolute top-10 left-0 right-0 flex justify-center items-center h-10 bg-white rounded-md border shadow-sm text-sm">
           Loading...
         </div>
       )}
 
-      {!selectedValue && !isLoading && showSuggestions && suggestions.length > 0 && (
+      {!value && !isLoading && showSuggestions && suggestions.length > 0 && (
         <ul
           id={listId}
           role="listbox"
