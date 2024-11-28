@@ -1,4 +1,4 @@
-export const cities = [
+[
   "New York",
   "Los Angeles",
   "Chicago",
@@ -47,5 +47,5 @@ export const cities = [
   "Minneapolis",
   "Tulsa",
   "Arlington",
-  "New Orleans",
-];
+  "New Orleans"
+]
