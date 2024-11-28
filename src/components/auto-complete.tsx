@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { HighlightedText } from "./highlighted-text";
 import { useClickOutside } from "@/hooks/use-click-outside";
-import { debounce, scrollInViewById } from "@/utils";
+import { debounce, scrollInViewById, throttle } from "@/utils";
 import { MatchResult } from "@/utils/data";
 
 type AutocompleteProps = {
@@ -155,7 +155,10 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
               aria-selected={selectedIndex === index}
               className="bg-white cursor-pointer px-2 py-1 w-full aria-selected:bg-gray-100"
               onClick={() => handleSelect(item.value)}
-              onMouseEnter={() => setSelectedIndex(index)}
+              onMouseMove={throttle(() => {
+                console.log("called");
+                setSelectedIndex(index);
+              }, 1000)}
             >
               <HighlightedText {...item} />
             </li>

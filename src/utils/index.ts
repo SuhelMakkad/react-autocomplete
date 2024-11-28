@@ -26,3 +26,21 @@ export const scrollInViewById = (id: string) => {
     element.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 };
+
+export const throttle = <T extends (...args: unknown[]) => unknown>(
+  callback: T,
+  waitFor: number
+) => {
+  let lastTime = 0;
+
+  return (...args: Parameters<T>): void => {
+    const now = Date.now();
+
+    if (now - lastTime < waitFor) {
+      return;
+    }
+
+    lastTime = now;
+    callback(...args);
+  };
+};
