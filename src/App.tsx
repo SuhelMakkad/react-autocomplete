@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Autocomplete } from "./components/auto-complete";
+import { searchCities } from "./utils/data";
 
 const App = () => {
   const [selectedCity, setSelectedCity] = useState("");
@@ -8,7 +9,7 @@ const App = () => {
     <main className="grid place-content-center mt-48">
       <div className="flex flex-col gap-1">
         <span className="text-sm">City search</span>
-        <Autocomplete value={selectedCity} onSelect={setSelectedCity} />
+        <Autocomplete value={selectedCity} onSelect={setSelectedCity} getData={searchCities} />
       </div>
 
       {!!selectedCity && (

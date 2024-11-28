@@ -2,13 +2,14 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { HighlightedText } from "./highlighted-text";
 import { useClickOutside } from "@/hooks/use-click-outside";
 import { debounce, scrollInViewById } from "@/utils";
-import { searchCities, MatchResult } from "@/utils/data";
+import { MatchResult } from "@/utils/data";
 
 type AutocompleteProps = {
   minChars?: number;
   placeholder?: string;
   value?: string;
   onSelect: (item: string) => void;
+  getData: (query: string) => Promise<MatchResult[]>;
 };
 
 export const Autocomplete: React.FC<AutocompleteProps> = ({
@@ -16,6 +17,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   onSelect,
   minChars = 1,
   placeholder = "Start typing...",
+  getData,
 }) => {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<MatchResult[]>([]);
@@ -40,7 +42,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
       setIsLoading(true);
 
       try {
-        const results = await searchCities(query);
+        const results = await getData(query);
         setSuggestions(results);
         setShowSuggestions(true);
       } catch (error) {
@@ -54,7 +56,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
     const timeoutId = debouncedFetchData();
 
     return () => clearTimeout(timeoutId);
-  }, [minChars, query]);
+  }, [getData, minChars, query]);
 
   const handleSelect = (item: string) => {
     setQuery(item);
