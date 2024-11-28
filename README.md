@@ -16,4 +16,3 @@ Now you can start the project in dev mode using below command.
 ```bash
 pnpm dev
 ```
-
