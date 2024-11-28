@@ -156,7 +156,6 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
               className="bg-white cursor-pointer px-2 py-1 w-full aria-selected:bg-gray-100"
               onClick={() => handleSelect(item.value)}
               onMouseMove={throttle(() => {
-                console.log("called");
                 setSelectedIndex(index);
               }, 1000)}
             >
