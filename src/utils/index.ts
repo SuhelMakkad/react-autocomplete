@@ -1,3 +1,5 @@
+export const baseURL = "/react-autocomplete";
+
 export type TimeoutId = ReturnType<typeof setTimeout>;
 
 export const debounce = <T extends (...args: unknown[]) => unknown>(

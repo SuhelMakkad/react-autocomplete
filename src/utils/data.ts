@@ -1,3 +1,5 @@
+import { baseURL } from ".";
+
 export type MatchPosition = {
   start: number;
   end: number;
@@ -9,7 +11,7 @@ export type MatchResult = {
 };
 
 export const searchCities = async (query: string): Promise<MatchResult[]> => {
-  const res = await fetch("/cities.json");
+  const res = await fetch(`${baseURL}/cities.json`);
   const cities = (await res.json()) as string[];
 
   return new Promise((resolve) => {
